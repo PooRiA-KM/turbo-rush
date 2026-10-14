@@ -1,0 +1,44 @@
+{
+  "name": "Turbo Rush - Motor Racing",
+  "short_name": "Turbo Rush",
+  "description": "A fast-paced top-down motor racing game. Dodge traffic, beat your high score!",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#111827",
+  "theme_color": "#111827",
+  "categories": ["games", "entertainment", "racing"],
+  "lang": "en",
+  "dir": "ltr",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Start Race",
+      "short_name": "Race",
+      "description": "Jump right into the race",
+      "url": "/?action=race",
+      "icons": [
+        {
+          "src": "/icon.svg",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}

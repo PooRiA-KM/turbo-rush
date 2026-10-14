@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1170 2532">
+  <defs>
+    <linearGradient id="splash-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f0c29"/>
+      <stop offset="50%" style="stop-color:#302b63"/>
+      <stop offset="100%" style="stop-color:#24243e"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1170" height="2532" fill="url(#splash-bg)"/>
+  
+  <!-- Road -->
+  <rect x="335" y="0" width="500" height="2532" fill="#2d2d2d"/>
+  
+  <!-- Road edges -->
+  <rect x="330" y="0" width="5" height="2532" fill="#ffffff" opacity="0.8"/>
+  <rect x="835" y="0" width="5" height="2532" fill="#ffffff" opacity="0.8"/>
+  
+  <!-- Lane markings -->
+  <rect x="458" y="100" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="458" y="250" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="458" y="400" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="458" y="550" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="458" y="700" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="458" y="850" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="458" y="1000" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="458" y="1150" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="458" y="1300" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="458" y="1450" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="458" y="1600" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="458" y="1750" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="458" y="1900" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="458" y="2050" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="458" y="2200" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="458" y="2350" width="8" height="60" fill="#ffdd00" rx="4"/>
+  
+  <rect x="704" y="100" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="704" y="250" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="704" y="400" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="704" y="550" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="704" y="700" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="704" y="850" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="704" y="1000" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="704" y="1150" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="704" y="1300" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="704" y="1450" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="704" y="1600" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="704" y="1750" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="704" y="1900" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="704" y="2050" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="704" y="2200" width="8" height="60" fill="#ffdd00" rx="4"/>
+  <rect x="704" y="2350" width="8" height="60" fill="#ffdd00" rx="4"/>
+  
+  <!-- Title -->
+  <text x="585" y="900" font-family="Arial, sans-serif" font-size="120" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="8">TURBO</text>
+  <text x="585" y="1050" font-family="Arial, sans-serif" font-size="120" font-weight="bold" fill="#00d4ff" text-anchor="middle" letter-spacing="8">RUSH</text>
+  
+  <!-- Car icon -->
+  <text x="585" y="1300" font-family="Arial, sans-serif" font-size="200" text-anchor="middle">🏎️</text>
+  
+  <!-- Loading text -->
+  <text x="585" y="1600" font-family="Arial, sans-serif" font-size="40" fill="#888888" text-anchor="middle" letter-spacing="4">LOADING...</text>
+</svg>

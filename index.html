@@ -1,12 +1,28 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    
+    <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Turbo Rush" />
+    <meta name="application-name" content="Turbo Rush" />
     <meta name="theme-color" content="#111827" />
+    <meta name="description" content="A fast-paced top-down motor racing game. Dodge traffic, beat your high score!" />
+    <meta name="mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+    
     <title>Turbo Rush - Motor Racing Game</title>
+    
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -107,7 +123,75 @@
     </script>
   </head>
   <body>
+    <!-- Splash screen shown before React loads -->
+    <div id="splash-screen" style="
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      z-index: 9999;
+      transition: opacity 0.5s ease-out;
+    ">
+      <div style="text-align: center;">
+        <div style="font-size: 80px; margin-bottom: 20px; animation: bounce 1s infinite;">🏎️</div>
+        <h1 style="
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          font-size: 48px;
+          font-weight: 900;
+          color: #ffffff;
+          margin: 0;
+          letter-spacing: 4px;
+        ">TURBO</h1>
+        <h2 style="
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          font-size: 48px;
+          font-weight: 900;
+          color: #00d4ff;
+          margin: 0;
+          letter-spacing: 4px;
+        ">RUSH</h2>
+        <div style="
+          margin-top: 40px;
+          width: 40px;
+          height: 40px;
+          border: 3px solid rgba(255,255,255,0.3);
+          border-top-color: #00d4ff;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin-left: auto;
+          margin-right: auto;
+        "></div>
+      </div>
+      <style>
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-20px); }
+        }
+      </style>
+    </div>
+    
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Hide splash screen after React loads -->
+    <script>
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var splash = document.getElementById('splash-screen');
+          if (splash) {
+            splash.style.opacity = '0';
+            setTimeout(function() {
+              splash.remove();
+            }, 500);
+          }
+        }, 1000);
+      });
+    </script>
   </body>
 </html>

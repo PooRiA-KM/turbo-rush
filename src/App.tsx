@@ -34,6 +34,13 @@ function App() {
 
   return (
     <div className="w-full h-screen overflow-hidden bg-gray-900 flex items-center justify-center">
+      {/* Landscape warning for mobile */}
+      <div className="landscape-warning">
+        <div className="text-6xl mb-4">📱</div>
+        <p className="text-xl font-bold mb-2">Please rotate your device</p>
+        <p className="text-gray-400">This game is designed for portrait mode</p>
+      </div>
+
       {gameState === 'menu' && (
         <MainMenu onStart={handleStart} highScore={highScore} />
       )}
