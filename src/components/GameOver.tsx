@@ -11,7 +11,7 @@ const GameOver: React.FC<GameOverProps> = ({ score, highScore, onRestart, onMenu
   const isNewRecord = score >= highScore && score > 0
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full px-4 text-center">
+    <div className="flex flex-col items-center justify-center w-full h-[100dvh] px-4 text-center" style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-red-900/40 via-gray-900 to-gray-900"></div>
 

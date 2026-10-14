@@ -55,7 +55,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStart, highScore }) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full px-4 text-center overflow-y-auto">
+    <div className="flex flex-col items-center justify-center w-full h-[100dvh] px-4 text-center overflow-y-auto" style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900"></div>

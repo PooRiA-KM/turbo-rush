@@ -33,7 +33,7 @@ function App() {
   }
 
   return (
-    <div className="w-full h-screen overflow-hidden bg-gray-900 flex items-center justify-center">
+    <div className="w-full h-[100dvh] overflow-hidden bg-gray-900 flex items-center justify-center">
       {/* Landscape warning for mobile */}
       <div className="landscape-warning">
         <div className="text-6xl mb-4">📱</div>

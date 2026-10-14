@@ -86,12 +86,15 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
     const container = containerRef.current
     if (!container) return
 
-    const rect = container.getBoundingClientRect()
+    // Use window dimensions for reliable sizing in standalone mode
+    const width = window.innerWidth
+    const height = window.innerHeight
+    
     const dpr = window.devicePixelRatio || 1
-    canvas.width = rect.width * dpr
-    canvas.height = rect.height * dpr
-    canvas.style.width = `${rect.width}px`
-    canvas.style.height = `${rect.height}px`
+    canvas.width = width * dpr
+    canvas.height = height * dpr
+    canvas.style.width = `${width}px`
+    canvas.style.height = `${height}px`
 
     const ctx = canvas.getContext('2d')
     if (ctx) {
@@ -99,15 +102,15 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
     }
 
     const state = gameStateRef.current
-    state.canvasWidth = rect.width
-    state.canvasHeight = rect.height
-    state.roadWidth = Math.min(rect.width * 0.75, 350)
-    state.roadLeft = (rect.width - state.roadWidth) / 2
+    state.canvasWidth = width
+    state.canvasHeight = height
+    state.roadWidth = Math.min(width * 0.75, 350)
+    state.roadLeft = (width - state.roadWidth) / 2
     state.laneWidth = state.roadWidth / LANE_COUNT
     state.playerWidth = Math.max(30, state.laneWidth * 0.55)
     state.playerHeight = state.playerWidth * 1.7
     state.playerX = state.roadLeft + state.roadWidth / 2 - state.playerWidth / 2
-    state.playerY = rect.height - state.playerHeight - 80
+    state.playerY = height - state.playerHeight - 80
     state.speed = 5
     state.score = 0
     state.enemies = []
@@ -120,7 +123,7 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
     // Initialize road marks
     state.roadMarks = []
     const markSpacing = 60
-    for (let y = -markSpacing; y < rect.height + markSpacing; y += markSpacing) {
+    for (let y = -markSpacing; y < height + markSpacing; y += markSpacing) {
       state.roadMarks.push({ y })
     }
   }, [])
@@ -515,9 +518,9 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
   }
 
   return (
-    <div ref={containerRef} className="relative w-full h-full flex flex-col">
+    <div ref={containerRef} className="relative w-full h-full flex flex-col" style={{ height: '100dvh' }}>
       {/* HUD */}
-      <div className="absolute top-0 left-0 right-0 z-20 flex justify-between items-start p-2 md:p-4 pointer-events-none">
+      <div className="absolute top-0 left-0 right-0 z-20 flex justify-between items-start p-2 md:p-4 pointer-events-none" style={{ paddingTop: 'max(0.5rem, env(safe-area-inset-top))' }}>
         <div className="bg-black/60 backdrop-blur-sm rounded-lg px-3 py-2 border border-gray-700">
           <p className="text-gray-400 text-xs uppercase tracking-wider">Score</p>
           <p className="text-white text-lg md:text-2xl font-bold">{score.toLocaleString()}</p>
@@ -539,7 +542,7 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
       />
 
       {/* Touch Controls */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 p-3 md:p-4 pointer-events-none">
+      <div className="fixed bottom-0 left-0 right-0 z-20 p-3 md:p-4 pointer-events-none" style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
         <div className="flex justify-between items-end max-w-lg mx-auto">
           {/* Left/Right controls */}
           <div className="flex gap-2 pointer-events-auto">
@@ -593,7 +596,7 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
 
       {/* Pause overlay */}
       {isPaused && (
-        <div className="absolute inset-0 z-30 bg-black/70 flex items-center justify-center">
+        <div className="fixed inset-0 z-30 bg-black/70 flex items-center justify-center">
           <div className="text-center">
             <p className="text-white text-3xl font-bold mb-4">PAUSED</p>
             <p className="text-gray-400">Press ESC to resume</p>
