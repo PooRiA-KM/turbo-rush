@@ -1,88 +1,146 @@
-// Register Service Worker for PWA functionality
-export function registerServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', async () => {
-      try {
-        const registration = await navigator.serviceWorker.register('/sw.js', {
-          scope: '/',
-        });
+// PWA utilities
 
-        console.log('[PWA] Service Worker registered:', registration.scope);
-
-        // Check for updates periodically
-        setInterval(() => {
-          registration.update();
-        }, 60 * 60 * 1000); // Check every hour
-
-        // Handle updates
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          if (newWorker) {
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // New version available
-                console.log('[PWA] New version available');
-                showUpdateNotification();
-              }
-            });
-          }
-        });
-      } catch (error) {
-        console.error('[PWA] Service Worker registration failed:', error);
-      }
-    });
-  }
+// Detect browser
+export function isSafari(): boolean {
+  return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 }
 
-// Show update notification
-function showUpdateNotification() {
-  if ('Notification' in window && Notification.permission === 'granted') {
-    navigator.serviceWorker.getRegistration().then((registration) => {
-      if (registration) {
-        registration.showNotification('Turbo Rush Update', {
-          body: 'A new version is available! Refresh to update.',
-          icon: '/icon.svg',
-          badge: '/icon.svg',
-          requireInteraction: true,
-        } as NotificationOptions);
-      }
-    });
-  }
+export function isIOS(): boolean {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
-// Request notification permission
-export async function requestNotificationPermission() {
-  if ('Notification' in window && Notification.permission === 'default') {
-    const permission = await Notification.requestPermission();
-    console.log('[PWA] Notification permission:', permission);
-    return permission === 'granted';
-  }
-  return false;
+export function isChrome(): boolean {
+  return /Chrome/i.test(navigator.userAgent) && !/Edge|Edg/i.test(navigator.userAgent);
 }
 
-// Check if app is installed
-export function isAppInstalled() {
+export function isStandalone(): boolean {
   return window.matchMedia('(display-mode: standalone)').matches || 
-         (window.navigator as any).standalone === true;
+    (window.navigator as any).standalone === true;
 }
 
-// Show install prompt
-export function setupInstallPrompt() {
-  let deferredPrompt: any;
+// Register Service Worker
+export function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) {
+    console.log('[PWA] Service Workers not supported');
+    return;
+  }
 
-  window.addEventListener('beforeinstallprompt', (e: Event) => {
+  window.addEventListener('load', async () => {
+    try {
+      // Get current path for scope
+      const base = window.location.pathname.replace(/\/[^/]*$/, '') + '/';
+      
+      const registration = await navigator.serviceWorker.register('./sw.js', {
+        scope: base,
+      });
+
+      console.log('[PWA] SW registered:', registration.scope);
+
+      // Check for updates every 30 minutes
+      setInterval(() => {
+        registration.update();
+      }, 30 * 60 * 1000);
+
+      // Handle updates
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing;
+        if (newWorker) {
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('[PWA] New version available');
+              // Notify user
+              if (confirm('New version available! Reload to update?')) {
+                newWorker.postMessage('SKIP_WAITING');
+                window.location.reload();
+              }
+            }
+          });
+        }
+      });
+    } catch (error) {
+      console.error('[PWA] SW registration failed:', error);
+    }
+  });
+}
+
+// Check if app can be installed (Chrome/Edge only)
+export function canInstall(): boolean {
+  // iOS doesn't support beforeinstallprompt
+  if (isIOS() || isSafari()) return false;
+  // Already installed
+  if (isStandalone()) return false;
+  return true;
+}
+
+// Setup install prompt (Chrome/Edge only)
+export function setupInstallPrompt(): (() => Promise<boolean>) | null {
+  if (!canInstall()) return null;
+
+  let deferredPrompt: any = null;
+
+  const handler = (e: Event) => {
     e.preventDefault();
     deferredPrompt = e;
-  });
+  };
+
+  window.addEventListener('beforeinstallprompt', handler);
 
   return async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`[PWA] Install prompt outcome: ${outcome}`);
-      deferredPrompt = null;
-      return outcome === 'accepted';
-    }
-    return false;
+    if (!deferredPrompt) return false;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    return outcome === 'accepted';
+  };
+}
+
+// Get install instructions based on browser
+export function getInstallInstructions(): { title: string; steps: string[] } | null {
+  if (isStandalone()) return null;
+
+  if (isIOS()) {
+    return {
+      title: 'Install on iPhone/iPad',
+      steps: [
+        'Open this page in Safari',
+        'Tap the Share button (⬆️) at the bottom',
+        'Scroll down and tap "Add to Home Screen"',
+        'Tap "Add" to confirm',
+        'The app icon will appear on your home screen',
+      ],
+    };
+  }
+
+  if (isSafari()) {
+    return {
+      title: 'Install on Mac',
+      steps: [
+        'Open this page in Safari',
+        'Click the Share button in the toolbar',
+        'Click "Add to Dock"',
+        'Click "Add" to confirm',
+      ],
+    };
+  }
+
+  if (isChrome()) {
+    return {
+      title: 'Install on Chrome',
+      steps: [
+        'Tap the menu button (⋮) in the top right',
+        'Tap "Install app" or "Add to Home screen"',
+        'Tap "Install" to confirm',
+      ],
+    };
+  }
+
+  // Firefox/Other
+  return {
+    title: 'Install App',
+    steps: [
+      'Look for the install icon in the address bar',
+      'Or use your browser\'s "Add to Home Screen" option',
+    ],
   };
 }

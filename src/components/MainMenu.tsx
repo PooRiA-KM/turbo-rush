@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { setupInstallPrompt, isAppInstalled } from '../pwa'
+import { setupInstallPrompt, canInstall, isStandalone, getInstallInstructions, isSafari, isIOS } from '../pwa'
 
 interface MainMenuProps {
   onStart: () => void
@@ -8,25 +8,34 @@ interface MainMenuProps {
 
 const MainMenu: React.FC<MainMenuProps> = ({ onStart, highScore }) => {
   const [showInstall, setShowInstall] = useState(false)
+  const [showInstructions, setShowInstructions] = useState(false)
   const [triggerInstall, setTriggerInstall] = useState<(() => Promise<boolean>) | null>(null)
+  const [instructions, setInstructions] = useState<{ title: string; steps: string[] } | null>(null)
 
   useEffect(() => {
-    // Check if already installed
-    if (isAppInstalled()) {
+    // Already installed - don't show install button
+    if (isStandalone()) {
       setShowInstall(false)
       return
     }
 
-    // Setup install prompt
-    const install = setupInstallPrompt()
-    setTriggerInstall(() => install)
-    
-    // Show install button after a short delay
-    const timer = setTimeout(() => {
-      setShowInstall(true)
-    }, 2000)
+    // For Chrome/Edge - try native install prompt
+    if (canInstall()) {
+      const install = setupInstallPrompt()
+      if (install) {
+        setTriggerInstall(() => install)
+        setTimeout(() => setShowInstall(true), 1500)
+      }
+    }
 
-    return () => clearTimeout(timer)
+    // For Safari/iOS - show manual instructions
+    if (isSafari() || isIOS()) {
+      const inst = getInstallInstructions()
+      if (inst) {
+        setInstructions(inst)
+        setTimeout(() => setShowInstall(true), 1500)
+      }
+    }
   }, [])
 
   const handleInstall = async () => {
@@ -34,7 +43,14 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStart, highScore }) => {
       const installed = await triggerInstall()
       if (installed) {
         setShowInstall(false)
+        return
       }
+    }
+    // If native install failed or not available, show instructions
+    const inst = getInstallInstructions()
+    if (inst) {
+      setInstructions(inst)
+      setShowInstructions(true)
     }
   }
 
@@ -85,14 +101,14 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStart, highScore }) => {
           <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-500 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
         </button>
 
-        {/* Install PWA Button */}
-        {showInstall && triggerInstall && (
+        {/* Install Button */}
+        {showInstall && (
           <button
             onClick={handleInstall}
-            className="flex items-center gap-2 px-6 py-2 bg-blue-600/20 border border-blue-500/50 rounded-lg text-blue-400 text-sm hover:bg-blue-600/30 transition-colors"
+            className="flex items-center gap-2 px-6 py-3 bg-blue-600/20 border border-blue-500/50 rounded-xl text-blue-400 text-sm md:text-base hover:bg-blue-600/30 transition-colors"
           >
             <span>📲</span>
-            <span>Install App</span>
+            <span>{isIOS() || isSafari() ? 'Add to Home Screen' : 'Install App'}</span>
           </button>
         )}
 
@@ -126,6 +142,47 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStart, highScore }) => {
           <span>Works offline • Installable PWA</span>
         </div>
       </div>
+
+      {/* Install Instructions Modal */}
+      {showInstructions && instructions && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-gray-800 border border-gray-600 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-white text-lg font-bold">{instructions.title}</h3>
+              <button
+                onClick={() => setShowInstructions(false)}
+                className="text-gray-400 hover:text-white text-2xl leading-none"
+              >
+                ×
+              </button>
+            </div>
+            
+            <ol className="space-y-3 text-left">
+              {instructions.steps.map((step, i) => (
+                <li key={i} className="flex gap-3 text-gray-300 text-sm">
+                  <span className="flex-shrink-0 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                    {i + 1}
+                  </span>
+                  <span className="pt-0.5">{step}</span>
+                </li>
+              ))}
+            </ol>
+
+            <div className="mt-6 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+              <p className="text-yellow-400 text-xs">
+                💡 <strong>Tip:</strong> Make sure you're using <strong>Safari</strong> (not Chrome) on iOS for the best PWA experience.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setShowInstructions(false)}
+              className="mt-4 w-full py-3 bg-blue-600 rounded-xl text-white font-bold hover:bg-blue-500 transition-colors"
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
