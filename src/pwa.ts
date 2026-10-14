@@ -19,56 +19,9 @@ export function isStandalone(): boolean {
     (window.navigator as any).standalone === true;
 }
 
-// Register Service Worker
-export function registerServiceWorker() {
-  if (!('serviceWorker' in navigator)) {
-    console.log('[PWA] Service Workers not supported');
-    return;
-  }
-
-  window.addEventListener('load', async () => {
-    try {
-      // Get current path for scope
-      const base = window.location.pathname.replace(/\/[^/]*$/, '') + '/';
-      
-      const registration = await navigator.serviceWorker.register('./sw.js', {
-        scope: base,
-      });
-
-      console.log('[PWA] SW registered:', registration.scope);
-
-      // Check for updates every 30 minutes
-      setInterval(() => {
-        registration.update();
-      }, 30 * 60 * 1000);
-
-      // Handle updates
-      registration.addEventListener('updatefound', () => {
-        const newWorker = registration.installing;
-        if (newWorker) {
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('[PWA] New version available');
-              // Notify user
-              if (confirm('New version available! Reload to update?')) {
-                newWorker.postMessage('SKIP_WAITING');
-                window.location.reload();
-              }
-            }
-          });
-        }
-      });
-    } catch (error) {
-      console.error('[PWA] SW registration failed:', error);
-    }
-  });
-}
-
 // Check if app can be installed (Chrome/Edge only)
 export function canInstall(): boolean {
-  // iOS doesn't support beforeinstallprompt
   if (isIOS() || isSafari()) return false;
-  // Already installed
   if (isStandalone()) return false;
   return true;
 }
@@ -103,8 +56,8 @@ export function getInstallInstructions(): { title: string; steps: string[] } | n
     return {
       title: 'Install on iPhone/iPad',
       steps: [
-        'Open this page in Safari',
-        'Tap the Share button (⬆️) at the bottom',
+        'Make sure you\'re using Safari (not Chrome)',
+        'Tap the Share button (⬆️) at the bottom of Safari',
         'Scroll down and tap "Add to Home Screen"',
         'Tap "Add" to confirm',
         'The app icon will appear on your home screen',
@@ -116,8 +69,7 @@ export function getInstallInstructions(): { title: string; steps: string[] } | n
     return {
       title: 'Install on Mac',
       steps: [
-        'Open this page in Safari',
-        'Click the Share button in the toolbar',
+        'Click the Share button in the Safari toolbar',
         'Click "Add to Dock"',
         'Click "Add" to confirm',
       ],
@@ -135,7 +87,6 @@ export function getInstallInstructions(): { title: string; steps: string[] } | n
     };
   }
 
-  // Firefox/Other
   return {
     title: 'Install App',
     steps: [

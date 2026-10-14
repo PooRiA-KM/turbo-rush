@@ -31,15 +31,9 @@
   </div>
   <script>
     // GitHub Pages SPA redirect
-    // This redirects all 404s back to index.html with the path preserved
-    var pathSegmentsToKeep = 0;
-    
-    // Detect if we're in a subpath (like /repo-name/)
     var l = window.location;
     var repoPath = l.pathname.match(/^\/([^\/]+)\//);
-    if (repoPath) {
-      pathSegmentsToKeep = 1;
-    }
+    var pathSegmentsToKeep = repoPath ? 1 : 0;
     
     l.replace(
       l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
